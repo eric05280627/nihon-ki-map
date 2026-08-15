@@ -118,3 +118,23 @@
 
 </body>
 </html>
+
+const heianMap = L.imageOverlay.rotated(
+  'heian-city.png',
+  topLeft,
+  topRight,
+  bottomLeft,
+  {
+    opacity: 0.74,
+    interactive: false
+  }
+).addTo(map);
+
+// 測試地標：平安宮
+const marker = L.marker([35.0155, 135.7460]).addTo(map);
+
+marker.bindPopup(`
+  <b>平安宮</b><br>
+  日本紀中的重要宮城建築。<br>
+  之後可以在這裡加入更完整說明。
+`);
