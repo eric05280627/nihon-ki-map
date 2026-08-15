@@ -28,6 +28,8 @@
 
 <script src="https://unpkg.com/leaflet-imageoverlay-rotated@0.2.1/Leaflet.ImageOverlay.Rotated.js"></script>
 
+  <script src="landmarks.js"></script>
+
 <script>
   const map = L.map('map').setView(
     [35.00281944444444, 135.7426180555556],
@@ -108,15 +110,16 @@
     }
   ).addTo(map);
 
-  // 測試地標：平安宮
-const marker = L.marker([35.0155, 135.7460]).addTo(map);
-
-marker.bindPopup(`
-  <b>平安宮</b><br>
-  日本紀中的重要宮城建築。<br>
-  之後可以在這裡加入更完整說明。
-`);
-
+// 載入所有地標
+landmarks.forEach(function(place) {
+  L.marker([place.lat, place.lng])
+    .addTo(map)
+    .bindPopup(`
+      <b>${place.name}</b><br>
+      ${place.description}
+    `);
+});
+  
 // 點擊地圖時顯示經緯度
 map.on('click', function(e) {
   const lat = e.latlng.lat.toFixed(6);
