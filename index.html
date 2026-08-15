@@ -117,6 +117,20 @@ marker.bindPopup(`
   之後可以在這裡加入更完整說明。
 `);
 
+// 點擊地圖時顯示經緯度
+map.on('click', function(e) {
+  const lat = e.latlng.lat.toFixed(6);
+  const lng = e.latlng.lng.toFixed(6);
+
+  L.popup()
+    .setLatLng(e.latlng)
+    .setContent(
+      '緯度：' + lat + '<br>' +
+      '經度：' + lng
+    )
+    .openOn(map);
+});
+  
   // 顯示整個疊圖所在地區
   map.fitBounds([
     [south, west],
