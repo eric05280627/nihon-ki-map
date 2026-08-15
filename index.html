@@ -26,14 +26,15 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<script src="https://unpkg.com/leaflet-imageoverlay-rotated@0.2.1/Leaflet.ImageOverlay.Rotated.js"></script>
+
 <script>
-  // 建立地圖，中心先放在京都
   const map = L.map('map').setView(
-    [35.003, 135.743],
+    [35.00281944444444, 135.7426180555556],
     13
   );
 
-  // 現代底圖
+  // OpenStreetMap 底圖
   L.tileLayer(
     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -42,23 +43,77 @@
     }
   ).addTo(map);
 
-  // 《平安城內外繪圖》的範圍
-  const heianBounds = [
-    [34.95325, 135.6921666666667],
-    [35.05238888888888, 135.7930694444445]
-  ];
 
-  // 疊上《平安城內外繪圖》
-  const heianMap = L.imageOverlay(
+  // ==========================================
+  // 平安城內外繪圖
+  // 原始 KMZ：
+  // north = 35.05238888888888
+  // south = 34.95325
+  // east  = 135.7930694444445
+  // west  = 135.6921666666667
+  // rotation = 0.3833°
+  // ==========================================
+
+  const north = 35.05238888888888;
+  const south = 34.95325;
+  const east  = 135.7930694444445;
+  const west  = 135.6921666666667;
+
+  const rotation = 0.3833 * Math.PI / 180;
+
+  const centerLat = (north + south) / 2;
+  const centerLng = (east + west) / 2;
+
+  // 在當地緯度下，修正經緯度東西、南北尺度不同
+  const cosLat = Math.cos(centerLat * Math.PI / 180);
+
+  function rotatePoint(lat, lng) {
+
+    const x = (lng - centerLng) * cosLat;
+    const y = lat - centerLat;
+
+    const xr =
+      x * Math.cos(rotation) -
+      y * Math.sin(rotation);
+
+    const yr =
+      x * Math.sin(rotation) +
+      y * Math.cos(rotation);
+
+    return L.latLng(
+      centerLat + yr,
+      centerLng + xr / cosLat
+    );
+  }
+
+  // 原圖三個角
+  const topLeft =
+    rotatePoint(north, west);
+
+  const topRight =
+    rotatePoint(north, east);
+
+  const bottomLeft =
+    rotatePoint(south, west);
+
+  // 建立可旋轉的圖片疊圖
+  const heianMap = L.imageOverlay.rotated(
     'heian-city.png',
-    heianBounds,
+    topLeft,
+    topRight,
+    bottomLeft,
     {
-      opacity: 0.74
+      opacity: 0.74,
+      interactive: false
     }
   ).addTo(map);
 
-  // 自動把畫面移到疊圖範圍
-  map.fitBounds(heianBounds);
+  // 顯示整個疊圖所在地區
+  map.fitBounds([
+    [south, west],
+    [north, east]
+  ]);
+
 </script>
 
 </body>
