@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>日本紀地圖</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <style>
+    html, body, #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // 建立地圖，中心先放在京都
+  const map = L.map('map').setView(
+    [35.003, 135.743],
+    13
+  );
+
+  // 現代底圖
+  L.tileLayer(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }
+  ).addTo(map);
+
+  // 《平安城內外繪圖》的範圍
+  const heianBounds = [
+    [34.95325, 135.6921666666667],
+    [35.05238888888888, 135.7930694444445]
+  ];
+
+  // 疊上《平安城內外繪圖》
+  const heianMap = L.imageOverlay(
+    'heian-city.png',
+    heianBounds,
+    {
+      opacity: 0.74
+    }
+  ).addTo(map);
+
+  // 自動把畫面移到疊圖範圍
+  map.fitBounds(heianBounds);
+</script>
+
+</body>
+</html>
